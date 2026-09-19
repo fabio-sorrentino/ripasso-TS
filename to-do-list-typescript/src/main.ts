@@ -1,4 +1,121 @@
 import './style.css'
+import type { Todo } from "./todo";
+
+type Filtro = "tutte" | "attive" | "completate";
+
+// --- Persistenza ---
+function salvaTodos() {
+  localStorage.setItem("todos", JSON.stringify(todos));
+}
+
+function caricaTodos(): Todo[] {
+  const dati = localStorage.getItem("todos");
+  if (dati === null) return [];
+  return JSON.parse(dati) as Todo[];
+}
+
+// --- Stato ---
+let todos: Todo[] = caricaTodos();
+let prossimoId = todos.length > 0
+  ? Math.max(...todos.map((t) => Number(t.id))) + 1
+  : 1;
+let filtroCorrente: Filtro = "tutte";
+
+// --- Elementi DOM ---
+const input = document.querySelector("#todo-input") as HTMLInputElement;
+const button = document.querySelector("#add-btn") as HTMLButtonElement;
+const list = document.querySelector("#todo-list") as HTMLUListElement;
+const filterAllBtn = document.querySelector("#filter-all") as HTMLButtonElement;
+const filterActiveBtn = document.querySelector("#filter-active") as HTMLButtonElement;
+const filterCompletedBtn = document.querySelector("#filter-completed") as HTMLButtonElement;
+
+// --- Logica ---
+function getTodoFiltrati(): Todo[] {
+  if (filtroCorrente === "attive") return todos.filter((t) => !t.completata);
+  if (filtroCorrente === "completate") return todos.filter((t) => t.completata);
+  return todos;
+}
+
+function eliminaTodo(id: string) {
+  todos = todos.filter((todo) => todo.id !== id);
+  salvaTodos();
+  renderTodos();
+}
+
+function renderTodos() {
+  list.innerHTML = "";
+
+  for (const todo of getTodoFiltrati()) {
+    const li = document.createElement("li");
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = todo.completata;
+    checkbox.addEventListener("change", () => {
+      todo.completata = checkbox.checked;
+      salvaTodos();
+      renderTodos();
+    });
+
+    const testoSpan = document.createElement("span");
+    testoSpan.textContent = todo.testo;
+    if (todo.completata) {
+      testoSpan.style.textDecoration = "line-through";
+    }
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Elimina";
+    deleteBtn.addEventListener("click", () => eliminaTodo(todo.id));
+
+    li.appendChild(checkbox);
+    li.appendChild(testoSpan);
+    li.appendChild(deleteBtn);
+    list.appendChild(li);
+  }
+}
+
+// --- Eventi ---
+button.addEventListener("click", () => {
+  const testo = input.value;
+  if (testo === "") return;
+
+  const nuovoTodo: Todo = {
+    id: (prossimoId++).toString(),
+    testo: testo,
+    completata: false,
+  };
+
+  todos.push(nuovoTodo);
+  salvaTodos();
+  renderTodos();
+  input.value = "";
+});
+
+filterAllBtn.addEventListener("click", () => {
+  filtroCorrente = "tutte";
+  renderTodos();
+});
+filterActiveBtn.addEventListener("click", () => {
+  filtroCorrente = "attive";
+  renderTodos();
+});
+filterCompletedBtn.addEventListener("click", () => {
+  filtroCorrente = "completate";
+  renderTodos();
+});
+
+// --- Avvio ---
+renderTodos();
+
+
+
+
+
+
+
+
+
+
 // import heroImg from './assets/hero.png'
 // import typescriptLogo from './assets/typescript.svg'
 // import viteLogo from './assets/vite.svg'
