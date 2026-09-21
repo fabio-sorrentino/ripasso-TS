@@ -1,51 +1,55 @@
 import './style.css'
-import type { Todo } from "./todo";
 
-type Filtro = "tutte" | "attive" | "completate";
-
-// --- Persistenza ---
-function salvaTodos() {
-  localStorage.setItem("todos", JSON.stringify(todos));
+interface Todo {
+  id: number;
+  attività: string;
+  completata: boolean;
 }
 
-function caricaTodos(): Todo[] {
-  const dati = localStorage.getItem("todos");
-  if (dati === null) return [];
-  return JSON.parse(dati) as Todo[];
-}
+type Filtro = "Tutte" | "DaFare" | "Completate";
 
-// --- Stato ---
-let todos: Todo[] = caricaTodos();
-let prossimoId = todos.length > 0
-  ? Math.max(...todos.map((t) => Number(t.id))) + 1
-  : 1;
-let filtroCorrente: Filtro = "tutte";
+let todos: Todo[] = [];
 
-// --- Elementi DOM ---
-const input = document.querySelector("#todo-input") as HTMLInputElement;
-const button = document.querySelector("#add-btn") as HTMLButtonElement;
-const list = document.querySelector("#todo-list") as HTMLUListElement;
-const filterAllBtn = document.querySelector("#filter-all") as HTMLButtonElement;
-const filterActiveBtn = document.querySelector("#filter-active") as HTMLButtonElement;
-const filterCompletedBtn = document.querySelector("#filter-completed") as HTMLButtonElement;
+let filtroCorrente: Filtro = "Tutte";
 
-// --- Logica ---
-function getTodoFiltrati(): Todo[] {
-  if (filtroCorrente === "attive") return todos.filter((t) => !t.completata);
-  if (filtroCorrente === "completate") return todos.filter((t) => t.completata);
-  return todos;
-}
+const input = document.querySelector<HTMLInputElement>("#todo-input")!;
+const addBtn = document.querySelector<HTMLButtonElement>("#add-btn")!;
+const list = document.querySelector<HTMLUListElement>("#todo-list")!;
 
-function eliminaTodo(id: string) {
-  todos = todos.filter((todo) => todo.id !== id);
-  salvaTodos();
+addBtn.addEventListener("click", () => {
+  const attività = input.value.trim();
+  if (attività === "") return;
+
+  const nuova: Todo = {
+    id: Date.now(),
+    attività,
+    completata: false,
+  };
+
+  todos.push(nuova);
+  input.value = "";
+  salva();
   renderTodos();
-}
+});
+
+input.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    addBtn.click();
+  }
+});
+
+//funzione che renderizza la lista di cose da fare ogni volta che aggiungo, modifico e cancello 
 
 function renderTodos() {
   list.innerHTML = "";
 
-  for (const todo of getTodoFiltrati()) {
+  const daMostrare = todos.filter((t) => {
+    if (filtroCorrente === "DaFare") return !t.completata;
+    if (filtroCorrente === "Completate") return t.completata;
+    return true;
+  });
+
+  for (const todo of daMostrare) {
     const li = document.createElement("li");
 
     const checkbox = document.createElement("input");
@@ -53,125 +57,57 @@ function renderTodos() {
     checkbox.checked = todo.completata;
     checkbox.addEventListener("change", () => {
       todo.completata = checkbox.checked;
-      salvaTodos();
+      salva();
       renderTodos();
     });
 
-    const testoSpan = document.createElement("span");
-    testoSpan.textContent = todo.testo;
+    const span = document.createElement("span");
+    span.textContent = todo.attività;
     if (todo.completata) {
-      testoSpan.style.textDecoration = "line-through";
+      span.style.textDecoration = "line-through";
+      span.style.opacity = "0.6";
     }
 
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "Elimina";
-    deleteBtn.addEventListener("click", () => eliminaTodo(todo.id));
+    deleteBtn.addEventListener("click", () => {
+      todos = todos.filter((t) => t.id !== todo.id);
+      salva();
+      renderTodos();
+    });
 
-    li.appendChild(checkbox);
-    li.appendChild(testoSpan);
-    li.appendChild(deleteBtn);
+    li.append(checkbox, span, deleteBtn);
     list.appendChild(li);
   }
 }
 
-// --- Eventi ---
-button.addEventListener("click", () => {
-  const testo = input.value;
-  if (testo === "") return;
 
-  const nuovoTodo: Todo = {
-    id: (prossimoId++).toString(),
-    testo: testo,
-    completata: false,
-  };
-
-  todos.push(nuovoTodo);
-  salvaTodos();
-  renderTodos();
-  input.value = "";
-});
-
-filterAllBtn.addEventListener("click", () => {
-  filtroCorrente = "tutte";
-  renderTodos();
-});
-filterActiveBtn.addEventListener("click", () => {
-  filtroCorrente = "attive";
-  renderTodos();
-});
-filterCompletedBtn.addEventListener("click", () => {
-  filtroCorrente = "completate";
+document.querySelector("#filter-all")!.addEventListener("click", () => {
+  filtroCorrente = "Tutte";
   renderTodos();
 });
 
-// --- Avvio ---
+document.querySelector("#filter-active")!.addEventListener("click", () => {
+  filtroCorrente = "DaFare";
+  renderTodos();
+});
+
+document.querySelector("#filter-done")!.addEventListener("click", () => {
+  filtroCorrente = "Completate";
+  renderTodos();
+});
+
+
+function salva() {
+  localStorage.setItem("todos", JSON.stringify(todos));
+}
+
+function carica() {
+  const salvati = localStorage.getItem("todos");
+  if (salvati) {
+    todos = JSON.parse(salvati) as Todo[];
+  }
+}
+
+carica();
 renderTodos();
-
-
-
-
-
-
-
-
-
-
-// import heroImg from './assets/hero.png'
-// import typescriptLogo from './assets/typescript.svg'
-// import viteLogo from './assets/vite.svg'
-// import { setupCounter } from './counter.ts'
-
-// document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-// <section id="center">
-//   <div class="hero">
-//     <img src="${heroImg}" class="base" width="170" height="179">
-//     <img src="${typescriptLogo}" class="framework" alt="TypeScript logo"/>
-//     <img src="${viteLogo}" class="vite" alt="Vite logo" />
-//   </div>
-//   <div>
-//     <h1>Get started</h1>
-//     <p>Edit <code>src/main.ts</code> and save to test <code>HMR</code></p>
-//   </div>
-//   <button id="counter" type="button" class="counter"></button>
-// </section>
-
-// <div class="ticks"></div>
-
-// <section id="next-steps">
-//   <div id="docs">
-//     <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#documentation-icon"></use></svg>
-//     <h2>Documentation</h2>
-//     <p>Your questions, answered</p>
-//     <ul>
-//       <li>
-//         <a href="https://vite.dev/" target="_blank">
-//           <img class="logo" src="${viteLogo}" alt="" />
-//           Explore Vite
-//         </a>
-//       </li>
-//       <li>
-//         <a href="https://www.typescriptlang.org" target="_blank">
-//           <img class="button-icon" src="${typescriptLogo}" alt="">
-//           Learn more
-//         </a>
-//       </li>
-//     </ul>
-//   </div>
-//   <div id="social">
-//     <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#social-icon"></use></svg>
-//     <h2>Connect with us</h2>
-//     <p>Join the Vite community</p>
-//     <ul>
-//       <li><a href="https://github.com/vitejs/vite" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#github-icon"></use></svg>GitHub</a></li>
-//       <li><a href="https://chat.vite.dev/" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#discord-icon"></use></svg>Discord</a></li>
-//       <li><a href="https://x.com/vite_js" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#x-icon"></use></svg>X.com</a></li>
-//       <li><a href="https://bsky.app/profile/vite.dev" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#bluesky-icon"></use></svg>Bluesky</a></li>
-//     </ul>
-//   </div>
-// </section>
-
-// <div class="ticks"></div>
-// <section id="spacer"></section>
-// `
-
-// setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
