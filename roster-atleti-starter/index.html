@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Roster Atleti</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <h1>Roster Atleti</h1>
+
+    <div class="form-row">
+      <input id="atleta-nome" type="text" placeholder="Nome" />
+      <input id="atleta-disciplina" type="text" placeholder="Disciplina" />
+      <input id="atleta-foto" type="text" placeholder="URL della foto" />
+      <button id="add-btn">Aggiungi</button>
+    </div>
+
+    <div class="filters">
+      <button id="filter-all">Tutti</button>
+      <button id="filter-squadra">In squadra</button>
+      <button id="filter-riserve">Riserve</button>
+    </div>
+
+    <!-- Per il bonus "contatore": scrivi qui il testo con textContent -->
+    <p id="contatore"></p>
+
+    <div id="atleti-list" class="griglia"></div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,73 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  color: #222;
+}
+
+h1 {
+  margin-bottom: 1rem;
+}
+
+.form-row,
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.form-row input {
+  flex: 1 1 160px;
+  padding: 0.5rem;
+}
+
+button {
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+}
+
+/* Griglia di card */
+.griglia {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.card img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #eee;
+}
+
+.card h3 {
+  margin: 0;
+}
+
+.card p {
+  margin: 0;
+  color: #666;
+}
+
+/* Classe da aggiungere alla card quando l'atleta e' in squadra */
+.card.in-squadra {
+  border-color: #2e7d32;
+  background: #f1f8f2;
+}
