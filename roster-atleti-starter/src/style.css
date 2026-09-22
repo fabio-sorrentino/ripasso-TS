@@ -8,10 +8,12 @@ body {
   margin: 2rem auto;
   padding: 0 1rem;
   color: #222;
+  background-color: antiquewhite;
 }
 
 h1 {
   margin-bottom: 1rem;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 .form-row,
@@ -25,12 +27,63 @@ h1 {
 .form-row input {
   flex: 1 1 160px;
   padding: 0.5rem;
+  border-radius: 10px;
 }
 
 button {
   padding: 0.5rem 0.9rem;
   cursor: pointer;
 }
+
+#add-btn {
+  background-color: rgb(150, 255, 150);
+  border-color: #006305;
+  border-radius: 10px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+#add-btn:hover {
+  background-color: darkgreen;
+  color: white;
+}
+
+#filter-all {
+  border-radius: 10px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  background-color: rgb(150, 255, 150);
+  border-color: #006305;
+}
+
+#filter-all:hover {
+  background-color: darkgreen;
+  color: white;
+}
+
+#filter-squadra {
+  border-radius: 10px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  background-color: rgb(117, 211, 255);
+  border-color: blue;
+}
+
+#filter-squadra:hover {
+  background-color: rgb(34, 141, 184);
+  color: white;
+
+}
+
+#filter-riserve {
+  border-radius: 10px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  background-color: rgb(255, 202, 102);
+  border-color: orangered;
+}
+
+#filter-riserve:hover {
+  background-color: rgb(231, 116, 40);
+  color: white;
+}
+
 
 /* Griglia di card */
 .griglia {
